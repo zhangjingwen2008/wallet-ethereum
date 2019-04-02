@@ -1,28 +1,29 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import LoginTab from "./view/login/login";
+import { Container } from "semantic-ui-react";
+import PubSub from "pubsub-js"
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+    componentDidMount() {
+        // 在挂载的时候，注册login登录成功订阅事件
+        PubSub.subscribe('onLoginSuccessfully', this.onLoginSuccessfully)
+    }
+
+    onLoginSuccessfully = (eventMsg, data) => {
+        console.log('eventMsg :', eventMsg)
+        console.log('data :', data)
+    }
+
+
+    render() {
+        return (
+            <Container>
+                <LoginTab />
+            </Container>
+        );
+    }
 }
 
 export default App;
