@@ -6,16 +6,20 @@ import PubSub from "pubsub-js";
 class PrivateKeyTab extends Component {
     state = {
         privateKey: "",
-        wallet: {}
+        wallets: [] //数组
     };
 
     handleCreateClick = () => {
         //直接生成私钥即可，不要生成钱包
-        let wallet = services.createRandomWallet();
-        console.log("prikey :", wallet.privateKey);
-        console.log("addr :", wallet.address);
+        // let wallet = services.createRandomWallet();
+        // console.log("prikey :", wallet.privateKey);
+        // console.log("addr :", wallet.address);
+
+        //做了修改，视频里没有说
+        let privateKey = services.createRandomKey();
+
         this.setState({
-            privateKey: wallet.privateKey
+            privateKey
         });
     };
 
@@ -39,18 +43,25 @@ class PrivateKeyTab extends Component {
             return;
         }
 
+        //单个钱包
         let wallet = services.createWalletByPrivatekey(privateKey);
 
-        this.setState({
-            wallet
-        });
+        if (wallet) {
+            let wallets = [];
+            wallets.push(wallet); //得到了只有一个wallet的钱包数组
 
-        //发布login成功的事件,
-        //事件名字
-        //传递的数据
-        PubSub.publish("onLoginSuccessfully", wallet); //事件名字，事件传递数据
+            this.setState({
+                wallets
+            });
 
-        console.log(this.state.wallet);
+            //发布login成功的事件,
+            //事件名字
+            //传递的数据
+            PubSub.publish("onLoginSuccessfully", wallets); //事件名字，事件传递数据
+            console.log(this.state.wallets);
+        } else {
+            alert("私钥生成钱包失败!");
+        }
     };
 
     render() {

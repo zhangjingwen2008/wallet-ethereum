@@ -2,14 +2,24 @@ import {
     ethers
 } from "ethers"
 
+import _ from 'lodash'
 
 
 // 2. 随机创建一个新的钱包
 let createRandomWallet = () => {
     let wallet = ethers.Wallet.createRandom()
-    // console.log('w2 privateKey :', w2.privateKey)
-    // console.log('w2 address :', w2.address)
+    console.log('wallet privateKey :', wallet.privateKey)
+    console.log('wallet address :', wallet.address)
     return wallet
+
+    //这里与视频有些出入, 直接生成私钥即可
+}
+
+// 随机私钥
+let createRandomKey = () => {
+    let randomByte = ethers.utils.randomBytes(32)
+    let randomNumber = ethers.utils.bigNumberify(randomByte);
+    return randomNumber.toHexString()
 }
 
 
@@ -54,6 +64,7 @@ let checkAddress = (address) => {
     }
 }
 
+
 //生成随机的助记词
 let createRandomMnemonic = () => {
     //16字节的随机数
@@ -63,13 +74,74 @@ let createRandomMnemonic = () => {
     return words
 }
 
+let MMICPATH_PREFIX = "m/44'/60'/0'/0/"
+
+//根据助记词和path路径生成对应的钱包
+let createWalletFromMnemonic = (mmic, path) => {
+    //现在只使用一个地址，但是我们能够获取很多
+    let wallets = []
+    for (let i = 0; i < 10; i++) {
+        let path1 = MMICPATH_PREFIX + i
+        let w = ethers.Wallet.fromMnemonic(mmic, path1)
+        wallets.push(w)
+        console.log(i + ":" + w.address)
+    }
+
+    //以后扩展的时候，可以把wallets全部返回
+    // return wallets[0]
+    return wallets
+}
+
+//根据json和password生成钱包
+let createWalletFromKeyStore = (keystore, password, callback) => {
+    return new Promise(async (resolve, reject) => {
+        // let wallets = [] //后续扩展
+        console.log('type:', typeof keystore)
+        try {
+            // let w = await ethers.Wallet.fromEncryptedJson(keystore, password, (progress) => {
+            //     console.log(parseInt(progress * 100) + '%')
+            // })
+            let w = await ethers.Wallet.fromEncryptedJson(keystore, password, callback)
+            resolve(w)
+
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
+let exportKeyStoreFromWallet = (wallet, password, callback) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // let keystore = await wallet.encrypt(password, p => {
+            //     console.log(parseInt(p * 100) + '%')
+            // })
+            let keystore = await wallet.encrypt(password, callback)
+            resolve(keystore)
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
+const addressIndexOptions = _.map([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], index => ({
+    key: index,
+    text: index,
+    value: index,
+}))
+
 
 let service = {
     createRandomWallet,
+    createRandomKey, //生成随机私钥
+    createRandomMnemonic, //生成随机的助记词
+    createWalletFromMnemonic, //根据助记词和path路径生成对应的钱包
     createWalletByPrivatekey,
+    createWalletFromKeyStore, //根据json和password生成钱包
+    exportKeyStoreFromWallet, //通过钱包，导出keystore文件，同时设置密码
     checkPrivateKey,
     checkAddress,
-    createRandomMnemonic,
+    addressIndexOptions,
 }
 
 export default service

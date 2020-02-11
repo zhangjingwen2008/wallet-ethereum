@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import AccountTab from "./accountTab";
 import TransactionTab from "./transactionTab";
+import SettingTab from "./settingTab";
 import { ethers } from "ethers";
 import service from "../../services/service";
+import { Select } from "semantic-ui-react";
 
 class Wallets extends Component {
     constructor(props) {
@@ -11,28 +13,31 @@ class Wallets extends Component {
         //1. 如果实现了构造函数，在构造函数内使用方式：this.state = {xxxx}
         //2. 如果在构造函数外使用，直接state= {xxxx}
         this.state = {
-            wallet: props.wallet, //未连接到网络
+            wallets: props.wallets, //未连接到网络
+            walletSelected: 0, //默认使用第0
 
             //与AccountTab(当前钱包相关的数据）
             address: "",
             balance: 0,
             txCount: 0,
-            walletActive: {} //已经连接到区块链的钱包，可以直接与网络交互
+            walletActive: "" //已经连接到区块链的钱包，可以直接与网络交互
         };
     }
 
     componentDidMount() {
         try {
-            this.updateCurrentWallet();
+            this.updateCurrentWallet(this.state.walletSelected);
+            console.log("wallets数据:", this.state.wallets);
         } catch (error) {
             console.log(error);
         }
     }
 
     //获取wallet在指定以太网网络的详情 : address, balance, txCount
-    async updateCurrentWallet() {
+    async updateCurrentWallet(index) {
         //获取钱包
-        let wallet = this.state.wallet;
+        // let wallet = this.state.wallets[this.state.walletSelected];
+        let wallet = this.state.wallets[index];
         console.log("wallet 1111 : ", wallet);
 
         //连接到指定的网络
@@ -66,14 +71,14 @@ class Wallets extends Component {
 
         //txto是否为有效地址
         if (!service.checkAddress(txto)) {
-            alert("转账地址无效!")
-            return
+            alert("转账地址无效!");
+            return;
         }
 
         //txvalue是否为数字
         if (isNaN(txvalue)) {
-            alert("转账数字无效!")
-            return
+            alert("转账数字无效!");
+            return;
         }
 
         //转账逻辑
@@ -92,19 +97,36 @@ class Wallets extends Component {
             alert("转账成功!");
 
             //更新展示页面
-            this.updateCurrentWallet();
+            this.updateCurrentWallet(this.state.walletSelected);
         } catch (error) {
             alert("转账失败!");
             console.log(error);
         }
     };
 
+    onChangeClicked = index => {
+        console.log("当前选择的index:", index);
+        this.updateCurrentWallet(index);
+    };
+
     render() {
         let { wallet } = this.state;
         return (
             <div>
+                {this.state.wallets.length > 1 && (
+                    <Select
+                        onChange={(event, data) => {
+                            this.onChangeClicked(data.value);
+                        }}
+                        placeholder="请选择地址:"
+                        options={service.addressIndexOptions}
+                    />
+                )}
                 <AccountTab allInfo={this.state} />
                 <TransactionTab onSendClick={this.onSendClick} />
+                {this.state.walletActive && (
+                    <SettingTab walletActive={this.state.walletActive} />
+                )}
             </div>
         );
     }

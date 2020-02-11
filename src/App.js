@@ -7,9 +7,8 @@ import PubSub from "pubsub-js";
 import Wallets from "./view/wallet/wallet"
 
 class App extends Component {
-
     state = {
-        wallet: {}, //保存从login界面得到的钱包
+        wallets: [], //保存从login界面得到的钱包
         loginFlag: false
     };
 
@@ -22,14 +21,14 @@ class App extends Component {
         console.log("eventMsg :", eventMsg);
         console.log("data :", data);
         this.setState({
-            wallet: data,
+            wallets: data,
             loginFlag: true
         });
     };
 
     render() {
-        let { wallet, loginFlag } = this.state;
-        let content = loginFlag ? <Wallets wallet={wallet}/> : <LoginTab />;
+        let { wallets, loginFlag } = this.state;
+        let content = loginFlag ? <Wallets wallets={wallets}/> : <LoginTab />;
         return <Container>{content}</Container>;
     }
 }
