@@ -44,12 +44,32 @@ let checkPrivateKey = (key) => {
     return ""
 }
 
+//校验地址有效性
+let checkAddress = (address) => {
+    try {
+        let addressNew = ethers.utils.getAddress(address)
+        return addressNew
+    } catch (error) {
+        return ""
+    }
+}
+
+//生成随机的助记词
+let createRandomMnemonic = () => {
+    //16字节的随机数
+    let value = ethers.utils.randomBytes(16)
+    //生成助记词
+    let words = ethers.utils.HDNode.entropyToMnemonic(value)
+    return words
+}
 
 
 let service = {
     createRandomWallet,
     createWalletByPrivatekey,
     checkPrivateKey,
+    checkAddress,
+    createRandomMnemonic,
 }
 
 export default service

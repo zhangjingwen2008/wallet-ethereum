@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { Tab, Grid, Header, Image } from "semantic-ui-react";
 import PrivateKeyTab from "./privateKeyTab"
+import MnemonicTab from "./mnemonicTab"
 
 const panes = [
     { menuItem: "私钥", render: () => <Tab.Pane><PrivateKeyTab/></Tab.Pane> },
-    { menuItem: "助记词", render: () => <Tab.Pane>Tab 2 Content</Tab.Pane> },
+    { menuItem: "助记词", render: () => <Tab.Pane><MnemonicTab/></Tab.Pane> },
     { menuItem: "KeyStore", render: () => <Tab.Pane>Tab 3 Content</Tab.Pane> }
 ];
 

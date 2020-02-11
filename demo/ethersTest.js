@@ -58,7 +58,6 @@ console.log("w4_b privateKey: " + w4_b.privateKey);
 
 //5. 随机创建一个助记词钱包
 //私钥：256位，随机数种子：128位
-
 let randValue = ethers.utils.randomBytes(16)
 let w5_mnemonic = ethers.utils.HDNode.entropyToMnemonic(randValue)
 console.log('w5助记词:', w5_mnemonic)

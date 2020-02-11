@@ -10,6 +10,7 @@ class PrivateKeyTab extends Component {
     };
 
     handleCreateClick = () => {
+        //直接生成私钥即可，不要生成钱包
         let wallet = services.createRandomWallet();
         console.log("prikey :", wallet.privateKey);
         console.log("addr :", wallet.address);
